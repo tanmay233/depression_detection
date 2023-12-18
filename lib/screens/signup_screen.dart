@@ -1,0 +1,424 @@
+import 'package:back_button_interceptor/back_button_interceptor.dart';
+import 'package:depression_app/screens/home_screen.dart';
+import 'package:depression_app/screens/login_screen.dart';
+import 'package:depression_app/screens/test.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+
+class signup_screen extends StatefulWidget {
+  const signup_screen({super.key});
+
+  @override
+  State<signup_screen> createState() => _signup_screenState();
+}
+
+class _signup_screenState extends State<signup_screen> {
+  void initState() {
+    super.initState();
+    BackButtonInterceptor.add(myInterceptor);
+  }
+
+  @override
+  void dispose() {
+    BackButtonInterceptor.remove(myInterceptor);
+    super.dispose();
+  }
+
+  bool myInterceptor(bool stopDefaultButtonEvent, RouteInfo info) {
+    Navigator.pop(
+        context, MaterialPageRoute(builder: (context) => loginScreen()));
+    return true;
+  }
+
+  String email = "", password = "", name = "";
+  TextEditingController _userPasswordController = new TextEditingController();
+  TextEditingController _userEmailController = TextEditingController();
+  TextEditingController _userNameController = TextEditingController();
+
+  registration() async {
+    if (password != null && _userNameController.text!="" && _userEmailController.text!="") {
+      try {
+        UserCredential userCredential = await FirebaseAuth.instance
+            .createUserWithEmailAndPassword(email: email, password: password);
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text(
+          "Registerd Sucessfully",
+          style: TextStyle(fontSize: 20),
+        )));
+        Navigator.push(
+            context, MaterialPageRoute(builder: (context) => home_screen()));
+      } on FirebaseAuthException catch (e) {
+        if (e.code == "weak-password") {
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+              backgroundColor: Colors.orangeAccent,
+              content: Text(
+                "Password provided is too weak",
+                style: TextStyle(fontSize: 18),
+              )));
+        } else if (e.code == "email-already-in-use"){
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+              backgroundColor: Colors.orangeAccent,
+              content: Text(
+                "Account already exists",
+                style: TextStyle(fontSize: 18),
+              )));
+        }
+      }
+    }
+  }
+
+  final _formkey = GlobalKey<FormState>();
+
+  bool _googleHold = false;
+  bool _facebookHold = false;
+  bool _passwordVisible = false;
+  bool _isChecked = false;
+
+  @override
+  Widget build(BuildContext context) {
+    Color getColor(Set<MaterialState> states) {
+      const Set<MaterialState> interactiveStates = <MaterialState>{
+        MaterialState.pressed,
+        MaterialState.selected,
+        MaterialState.focused,
+      };
+      if (states.any(interactiveStates.contains)) {
+        return Colors.white;
+      }
+      return Colors.grey;
+    }
+
+    return Container(
+        decoration: const BoxDecoration(
+          gradient: RadialGradient(
+            center: Alignment.topLeft,
+            radius: 0.75,
+            colors: [
+              Color(0xff86DEBF),
+              Colors.white,
+              Colors.white,
+              Colors.white,
+            ],
+          ),
+        ),
+        child: Scaffold(
+          backgroundColor: Colors.transparent,
+          body: SingleChildScrollView(
+            child: Container(
+              child: Column(
+                children: <Widget>[
+                  //upper padding
+
+                  SizedBox(
+                    height: MediaQuery.of(context).size.height * 0.15,
+                  ),
+
+                  //For the text
+                  Container(
+                    alignment: Alignment.center,
+                    child: const Text(
+                      "Join us to start searching",
+                      style:
+                          TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                    ),
+                  ),
+
+                  // bottom padding
+
+                  SizedBox(
+                    height: MediaQuery.of(context).size.height * 0.15,
+                  ),
+
+                  // Buttons
+
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: <Widget>[
+                      // button for google
+                      GestureDetector(
+                        onTapDown: (details) {
+                          setState(() {
+                            _googleHold = true;
+                          });
+                        },
+                        onTapUp: (details) {
+                          setState(() {
+                            _googleHold = false;
+                          });
+                        },
+                        child: Card(
+                          elevation: _googleHold ? 0 : 5,
+                          child: Container(
+                            padding: const EdgeInsets.fromLTRB(30, 15, 30, 15),
+                            decoration: const BoxDecoration(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(15)),
+                                color: Colors.white),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                SvgPicture.asset('assets/google.svg'),
+                                const SizedBox(
+                                  width: 10,
+                                ),
+                                const Text("Google")
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                      //Button for facebook
+                      GestureDetector(
+                        onTapDown: (details) {
+                          setState(() {
+                            _facebookHold = true;
+                          });
+                        },
+                        onTapUp: (details) {
+                          setState(() {
+                            _facebookHold = false;
+                          });
+                        },
+                        child: Card(
+                          elevation: _facebookHold ? 0 : 5,
+                          child: Container(
+                            padding: const EdgeInsets.fromLTRB(30, 15, 30, 15),
+                            decoration: const BoxDecoration(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(15)),
+                                color: Colors.white),
+                            child: Row(
+                              children: [
+                                SvgPicture.asset('assets/facebook.svg'),
+                                const SizedBox(
+                                  width: 10,
+                                ),
+                                const Text("FaceBook")
+                              ],
+                            ),
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
+                  // in between space
+
+                  const SizedBox(
+                    height: 40,
+                  ),
+
+                  // Text fields
+                  Form(
+                    key: _formkey,
+                    child: Column(
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.fromLTRB(
+                              MediaQuery.of(context).size.width * 0.05,
+                              0,
+                              MediaQuery.of(context).size.width * 0.05,
+                              0),
+                          child: Card(
+                            elevation: 2.5,
+                            child: Theme(
+                              data: Theme.of(context)
+                                  .copyWith(splashColor: Colors.transparent),
+                              child: TextFormField(
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Please Enter Name';
+                                  }
+                                  return null;
+                                },
+                                keyboardType: TextInputType.text,
+                                controller: _userNameController,
+                                decoration: const InputDecoration(
+                                    hintText: 'Name',
+                                    filled: true,
+                                    fillColor: Colors.white,
+                                    hintStyle: TextStyle(color: Colors.grey),
+                                    focusedBorder: OutlineInputBorder(
+                                        borderSide: BorderSide(
+                                            width: 2, color: Colors.grey)),
+                                    enabledBorder: OutlineInputBorder(
+                                        borderSide: BorderSide(
+                                            width: 2, color: Colors.white))),
+                                style: const TextStyle(color: Colors.black),
+                              ),
+                            ),
+                          ),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.fromLTRB(
+                              MediaQuery.of(context).size.width * 0.05,
+                              0,
+                              MediaQuery.of(context).size.width * 0.05,
+                              0),
+                          child: Card(
+                            elevation: 2.5,
+                            child: Theme(
+                              data: Theme.of(context)
+                                  .copyWith(splashColor: Colors.transparent),
+                              child: TextFormField(
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Please Enter Email';
+                                  }
+                                  return null;
+                                },
+                                keyboardType: TextInputType.text,
+                                controller: _userEmailController,
+                                decoration: const InputDecoration(
+                                    hintText: 'Email',
+                                    filled: true,
+                                    fillColor: Colors.white,
+                                    hintStyle: TextStyle(color: Colors.grey),
+                                    focusedBorder: OutlineInputBorder(
+                                        borderSide: BorderSide(
+                                            width: 2, color: Colors.grey)),
+                                    enabledBorder: OutlineInputBorder(
+                                        borderSide: BorderSide(
+                                            width: 2, color: Colors.white))),
+                                style: const TextStyle(color: Colors.black),
+                              ),
+                            ),
+                          ),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.fromLTRB(
+                              MediaQuery.of(context).size.width * 0.05,
+                              0,
+                              MediaQuery.of(context).size.width * 0.05,
+                              0),
+                          child: Card(
+                            elevation: 2.5,
+                            child: Theme(
+                              data: Theme.of(context)
+                                  .copyWith(splashColor: Colors.transparent),
+                              child: TextFormField(
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Please Enter Password';
+                                  }
+                                  return null;
+                                },
+                                keyboardType: TextInputType.text,
+                                controller: _userPasswordController,
+                                obscureText: !_passwordVisible,
+                                decoration: InputDecoration(
+                                    filled: true,
+                                    fillColor: Colors.white,
+                                    hintText: 'Password',
+                                    hintStyle:
+                                        const TextStyle(color: Colors.grey),
+                                    suffixIcon: IconButton(
+                                      icon: Icon(_passwordVisible
+                                          ? Icons.visibility
+                                          : Icons.visibility_off),
+                                      onPressed: () {
+                                        setState(() {
+                                          _passwordVisible = !_passwordVisible;
+                                        });
+                                      },
+                                    ),
+                                    focusedBorder: const OutlineInputBorder(
+                                        borderSide: BorderSide(
+                                            width: 2, color: Colors.grey)),
+                                    enabledBorder: const OutlineInputBorder(
+                                        borderSide: BorderSide(
+                                            width: 2, color: Colors.white))),
+                                style: const TextStyle(color: Colors.black),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  // Sign in button
+
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(0, 15, 0, 0),
+                    child: TextButton(
+                      onPressed: () {},
+                      child: Container(
+                        padding: const EdgeInsets.fromLTRB(100, 10, 100, 10),
+                        decoration: const BoxDecoration(
+                          color: Color(0xff0EBE7F),
+                          borderRadius: BorderRadius.all(Radius.circular(15)),
+                        ),
+                        child: const Text(
+                          "Sign Up",
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 18),
+                        ),
+                      ),
+                    ),
+                  ),
+
+                  //in between space
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  //T&C
+
+                  Row(
+                    children: [
+                      Checkbox(
+                        shape: CircleBorder(),
+                        checkColor: Colors.black,
+                        fillColor: MaterialStateProperty.resolveWith(getColor),
+                        side: MaterialStateBorderSide.resolveWith((states) =>
+                            BorderSide(
+                                width: 1.0,
+                                color: _isChecked
+                                    ? Colors.black
+                                    : Colors.transparent)),
+                        value: _isChecked,
+                        onChanged: (bool? value) {
+                          setState(() {
+                            _isChecked = value!;
+                          });
+                        },
+                      ),
+                      Text(
+                        "I agree with Terms of Services & Privacy Policy",
+                        style: TextStyle(color: Colors.grey, fontSize: 13),
+                      )
+                    ],
+                  ),
+
+                  // inbetween space
+                  SizedBox(
+                    height: 30,
+                  ),
+                  //login
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.pop(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => loginScreen()));
+                        },
+                        child: const Text(
+                          "Have an Account? Log In",
+                          style:
+                              TextStyle(color: Color(0xff0ebe7f), fontSize: 14),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ));
+  }
+}
