@@ -201,7 +201,7 @@ class _loginStateScreen extends State<loginScreen> {
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              SvgPicture.asset('assets/google.svg'),
+                              SvgPicture.asset('assets/images/google.svg'),
                               const SizedBox(
                                 width: 10,
                               ),
@@ -233,7 +233,7 @@ class _loginStateScreen extends State<loginScreen> {
                               color: Colors.white),
                           child: Row(
                             children: [
-                              SvgPicture.asset('assets/facebook.svg'),
+                              SvgPicture.asset('assets/images/facebook.svg'),
                               const SizedBox(
                                 width: 10,
                               ),

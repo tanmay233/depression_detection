@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously, prefer_final_fields, annotate_overrides, camel_case_types, duplicate_ignore, unused_local_variable, unnecessary_null_comparison, unused_import
+
 import 'package:back_button_interceptor/back_button_interceptor.dart';
 import 'package:depression_app/screens/home_screen.dart';
 import 'package:depression_app/screens/login_screen.dart';
@@ -27,37 +29,39 @@ class _signup_screenState extends State<signup_screen> {
 
   bool myInterceptor(bool stopDefaultButtonEvent, RouteInfo info) {
     Navigator.pop(
-        context, MaterialPageRoute(builder: (context) => loginScreen()));
+        context, MaterialPageRoute(builder: (context) => const loginScreen()));
     return true;
   }
 
   String email = "", password = "", name = "";
-  TextEditingController _userPasswordController = new TextEditingController();
+  TextEditingController _userPasswordController = TextEditingController();
   TextEditingController _userEmailController = TextEditingController();
   TextEditingController _userNameController = TextEditingController();
 
   registration() async {
     if (password != null && _userNameController.text!="" && _userEmailController.text!="") {
+      // ignore: duplicate_ignore
       try {
         UserCredential userCredential = await FirebaseAuth.instance
             .createUserWithEmailAndPassword(email: email, password: password);
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        // ignore: use_build_context_synchronously
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
             content: Text(
           "Registerd Sucessfully",
           style: TextStyle(fontSize: 20),
         )));
         Navigator.push(
-            context, MaterialPageRoute(builder: (context) => home_screen()));
+            context, MaterialPageRoute(builder: (context) => const home_screen()));
       } on FirebaseAuthException catch (e) {
         if (e.code == "weak-password") {
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
               backgroundColor: Colors.orangeAccent,
               content: Text(
                 "Password provided is too weak",
                 style: TextStyle(fontSize: 18),
               )));
         } else if (e.code == "email-already-in-use"){
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
               backgroundColor: Colors.orangeAccent,
               content: Text(
                 "Account already exists",
@@ -105,6 +109,7 @@ class _signup_screenState extends State<signup_screen> {
         child: Scaffold(
           backgroundColor: Colors.transparent,
           body: SingleChildScrollView(
+            // ignore: avoid_unnecessary_containers
             child: Container(
               child: Column(
                 children: <Widget>[
@@ -158,7 +163,7 @@ class _signup_screenState extends State<signup_screen> {
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                SvgPicture.asset('assets/google.svg'),
+                                SvgPicture.asset('assets/images/google.svg'),
                                 const SizedBox(
                                   width: 10,
                                 ),
@@ -190,7 +195,7 @@ class _signup_screenState extends State<signup_screen> {
                                 color: Colors.white),
                             child: Row(
                               children: [
-                                SvgPicture.asset('assets/facebook.svg'),
+                                SvgPicture.asset('assets/images/facebook.svg'),
                                 const SizedBox(
                                   width: 10,
                                 ),
@@ -369,7 +374,7 @@ class _signup_screenState extends State<signup_screen> {
                   Row(
                     children: [
                       Checkbox(
-                        shape: CircleBorder(),
+                        shape: const CircleBorder(),
                         checkColor: Colors.black,
                         fillColor: MaterialStateProperty.resolveWith(getColor),
                         side: MaterialStateBorderSide.resolveWith((states) =>
@@ -385,7 +390,7 @@ class _signup_screenState extends State<signup_screen> {
                           });
                         },
                       ),
-                      Text(
+                      const Text(
                         "I agree with Terms of Services & Privacy Policy",
                         style: TextStyle(color: Colors.grey, fontSize: 13),
                       )
@@ -393,7 +398,7 @@ class _signup_screenState extends State<signup_screen> {
                   ),
 
                   // inbetween space
-                  SizedBox(
+                  const SizedBox(
                     height: 30,
                   ),
                   //login
@@ -405,7 +410,7 @@ class _signup_screenState extends State<signup_screen> {
                           Navigator.pop(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => loginScreen()));
+                                  builder: (context) => const loginScreen()));
                         },
                         child: const Text(
                           "Have an Account? Log In",
