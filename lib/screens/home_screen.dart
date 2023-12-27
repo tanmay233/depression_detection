@@ -1,4 +1,4 @@
-// ignore_for_file: camel_case_types
+// ignore_for_file: camel_case_types, prefer_const_constructors
 
 import 'package:flutter/material.dart';
 
@@ -12,10 +12,8 @@ class home_screen extends StatefulWidget {
 class _home_screenState extends State<home_screen> {
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(
-        child: Text("data"),
-      ),
+    return Scaffold(
+      body: Text("data"),
     );
   }
 }

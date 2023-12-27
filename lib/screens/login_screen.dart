@@ -1,4 +1,9 @@
+// ignore_for_file: avoid_print, use_build_context_synchronously, prefer_const_constructors, prefer_final_fields, unused_import, no_leading_underscores_for_local_identifiers, unused_local_variable, prefer_interpolation_to_compose_strings
+
+import 'package:depression_app/screens/home_screen.dart';
 import 'package:depression_app/screens/signup_screen.dart';
+import 'package:depression_app/screens/test.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -19,6 +24,40 @@ class _loginStateScreen extends State<loginScreen> {
   bool _googleHold = false;
   bool _facebookHold = false;
   bool _passwordVisible = false;
+  bool _isLoading = false;
+
+  final _formkey = GlobalKey<FormState>();
+
+  dummy() {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("data")));
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text("data2")));
+  }
+
+  signInWithEmailAndPassword(email, pass) async {
+    try {
+      final credential = await FirebaseAuth.instance
+          .signInWithEmailAndPassword(email: email, password: pass);
+      print('logged in');
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("1")));
+      Navigator.push(
+          context, MaterialPageRoute(builder: (context) => home_screen()));
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'user-not-found') {
+        print('No user found for that email.');
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text("2")));
+      } else if (e.code == 'wrong-password') {
+        print('Wrong password provided for that user.');
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text("3")));
+      } else {
+        print(e.toString());
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text("4")));
+      }
+    }
+  }
 
   _displayBottomSheet(BuildContext context) {
     return showModalBottomSheet(
@@ -253,76 +292,95 @@ class _loginStateScreen extends State<loginScreen> {
 
                 // Text fields
 
-                Padding(
-                  padding: EdgeInsets.fromLTRB(
-                      MediaQuery.of(context).size.width * 0.05,
-                      0,
-                      MediaQuery.of(context).size.width * 0.05,
-                      0),
-                  child: Card(
-                    elevation: 2.5,
-                    child: Theme(
-                      data: Theme.of(context)
-                          .copyWith(splashColor: Colors.transparent),
-                      child: TextField(
-                        keyboardType: TextInputType.text,
-                        controller: _userEmailController,
-                        decoration: const InputDecoration(
-                            hintText: 'Enter Email',
-                            filled: true,
-                            fillColor: Colors.white,
-                            hintStyle: TextStyle(color: Colors.grey),
-                            focusedBorder: OutlineInputBorder(
-                                borderSide:
-                                    BorderSide(width: 2, color: Colors.grey)),
-                            enabledBorder: OutlineInputBorder(
-                                borderSide:
-                                    BorderSide(width: 2, color: Colors.white))),
-                        style: const TextStyle(color: Colors.black),
-                      ),
-                    ),
-                  ),
-                ),
-
-                Padding(
-                  padding: EdgeInsets.fromLTRB(
-                      MediaQuery.of(context).size.width * 0.05,
-                      0,
-                      MediaQuery.of(context).size.width * 0.05,
-                      0),
-                  child: Card(
-                    elevation: 2.5,
-                    child: Theme(
-                      data: Theme.of(context)
-                          .copyWith(splashColor: Colors.transparent),
-                      child: TextField(
-                        keyboardType: TextInputType.text,
-                        controller: _userPasswordController,
-                        obscureText: !_passwordVisible,
-                        decoration: InputDecoration(
-                            filled: true,
-                            fillColor: Colors.white,
-                            hintText: 'Enter Password',
-                            hintStyle: const TextStyle(color: Colors.grey),
-                            suffixIcon: IconButton(
-                              icon: Icon(_passwordVisible
-                                  ? Icons.visibility
-                                  : Icons.visibility_off),
-                              onPressed: () {
-                                setState(() {
-                                  _passwordVisible = !_passwordVisible;
-                                });
+                Form(
+                  key: _formkey,
+                  child: Column(
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.fromLTRB(
+                            MediaQuery.of(context).size.width * 0.05,
+                            0,
+                            MediaQuery.of(context).size.width * 0.05,
+                            0),
+                        child: Card(
+                          elevation: 2.5,
+                          child: Theme(
+                            data: Theme.of(context)
+                                .copyWith(splashColor: Colors.transparent),
+                            child: TextFormField(
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Please Enter Email';
+                                }
+                                return null;
                               },
+                              keyboardType: TextInputType.text,
+                              controller: _userEmailController,
+                              decoration: const InputDecoration(
+                                  hintText: 'Enter Email',
+                                  filled: true,
+                                  fillColor: Colors.white,
+                                  hintStyle: TextStyle(color: Colors.grey),
+                                  focusedBorder: OutlineInputBorder(
+                                      borderSide: BorderSide(
+                                          width: 2, color: Colors.grey)),
+                                  enabledBorder: OutlineInputBorder(
+                                      borderSide: BorderSide(
+                                          width: 2, color: Colors.white))),
+                              style: const TextStyle(color: Colors.black),
                             ),
-                            focusedBorder: const OutlineInputBorder(
-                                borderSide:
-                                    BorderSide(width: 2, color: Colors.grey)),
-                            enabledBorder: const OutlineInputBorder(
-                                borderSide:
-                                    BorderSide(width: 2, color: Colors.white))),
-                        style: const TextStyle(color: Colors.black),
+                          ),
+                        ),
                       ),
-                    ),
+                      Padding(
+                        padding: EdgeInsets.fromLTRB(
+                            MediaQuery.of(context).size.width * 0.05,
+                            0,
+                            MediaQuery.of(context).size.width * 0.05,
+                            0),
+                        child: Card(
+                          elevation: 2.5,
+                          child: Theme(
+                            data: Theme.of(context)
+                                .copyWith(splashColor: Colors.transparent),
+                            child: TextFormField(
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Please Enter Password';
+                                }
+                                return null;
+                              },
+                              keyboardType: TextInputType.text,
+                              controller: _userPasswordController,
+                              obscureText: !_passwordVisible,
+                              decoration: InputDecoration(
+                                  filled: true,
+                                  fillColor: Colors.white,
+                                  hintText: 'Enter Password',
+                                  hintStyle:
+                                      const TextStyle(color: Colors.grey),
+                                  suffixIcon: IconButton(
+                                    icon: Icon(_passwordVisible
+                                        ? Icons.visibility
+                                        : Icons.visibility_off),
+                                    onPressed: () {
+                                      setState(() {
+                                        _passwordVisible = !_passwordVisible;
+                                      });
+                                    },
+                                  ),
+                                  focusedBorder: const OutlineInputBorder(
+                                      borderSide: BorderSide(
+                                          width: 2, color: Colors.grey)),
+                                  enabledBorder: const OutlineInputBorder(
+                                      borderSide: BorderSide(
+                                          width: 2, color: Colors.white))),
+                              style: const TextStyle(color: Colors.black),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
 
@@ -331,20 +389,34 @@ class _loginStateScreen extends State<loginScreen> {
                 Padding(
                   padding: const EdgeInsets.fromLTRB(0, 15, 0, 0),
                   child: TextButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      if (_formkey.currentState!.validate()) {
+                        print('clicked login' +
+                            _userEmailController.text +
+                            _userPasswordController.text);
+                        signInWithEmailAndPassword(_userEmailController.text,
+                            _userPasswordController.text);
+                        dummy();
+                      }
+                    },
                     child: Container(
                       padding: const EdgeInsets.fromLTRB(100, 10, 100, 10),
                       decoration: const BoxDecoration(
                         color: Color(0xff0EBE7F),
                         borderRadius: BorderRadius.all(Radius.circular(15)),
                       ),
-                      child: const Text(
-                        "Log In",
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 18),
-                      ),
+                      child: _isLoading
+                          ? Center(
+                              child: CircularProgressIndicator(
+                              color: Colors.white,
+                            ))
+                          : const Text(
+                              "Log In",
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 18),
+                            ),
                     ),
                   ),
                 ),

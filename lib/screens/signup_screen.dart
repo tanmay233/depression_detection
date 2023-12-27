@@ -1,4 +1,4 @@
-// ignore_for_file: use_build_context_synchronously, prefer_final_fields, annotate_overrides, camel_case_types, duplicate_ignore, unused_local_variable, unnecessary_null_comparison, unused_import
+// ignore_for_file: use_build_context_synchronously, prefer_final_fields, annotate_overrides, camel_case_types, duplicate_ignore, unused_local_variable, unnecessary_null_comparison, unused_import, prefer_const_constructors, no_leading_underscores_for_local_identifiers, avoid_print
 
 import 'package:back_button_interceptor/back_button_interceptor.dart';
 import 'package:depression_app/screens/home_screen.dart';
@@ -38,37 +38,74 @@ class _signup_screenState extends State<signup_screen> {
   TextEditingController _userEmailController = TextEditingController();
   TextEditingController _userNameController = TextEditingController();
 
-  registration() async {
-    if (password != null && _userNameController.text!="" && _userEmailController.text!="") {
-      // ignore: duplicate_ignore
-      try {
-        UserCredential userCredential = await FirebaseAuth.instance
-            .createUserWithEmailAndPassword(email: email, password: password);
-        // ignore: use_build_context_synchronously
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-            content: Text(
-          "Registerd Sucessfully",
-          style: TextStyle(fontSize: 20),
-        )));
-        Navigator.push(
-            context, MaterialPageRoute(builder: (context) => const home_screen()));
-      } on FirebaseAuthException catch (e) {
-        if (e.code == "weak-password") {
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-              backgroundColor: Colors.orangeAccent,
-              content: Text(
-                "Password provided is too weak",
-                style: TextStyle(fontSize: 18),
-              )));
-        } else if (e.code == "email-already-in-use"){
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-              backgroundColor: Colors.orangeAccent,
-              content: Text(
-                "Account already exists",
-                style: TextStyle(fontSize: 18),
-              )));
-        }
+  // registration() async {
+  //   if (password != null && _userNameController.text!="" && _userEmailController.text!="") {
+  //     // ignore: duplicate_ignore
+  //     try {
+  //       UserCredential userCredential = await FirebaseAuth.instance
+  //           .createUserWithEmailAndPassword(email: email, password: password);
+  //       // ignore: use_build_context_synchronously
+  //       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+  //           content: Text(
+  //         "Registerd Sucessfully",
+  //         style: TextStyle(fontSize: 20),
+  //       )));
+  //       Navigator.push(
+  //           context, MaterialPageRoute(builder: (context) => const home_screen()));
+  //     } on FirebaseAuthException catch (e) {
+  //       if (e.code == "weak-password") {
+  //         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+  //             backgroundColor: Colors.orangeAccent,
+  //             content: Text(
+  //               "Password provided is too weak",
+  //               style: TextStyle(fontSize: 18),
+  //             )));
+  //       } else if (e.code == "email-already-in-use"){
+  //         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+  //             backgroundColor: Colors.orangeAccent,
+  //             content: Text(
+  //               "Account already exists",
+  //               style: TextStyle(fontSize: 18),
+  //             )));
+  //       }
+  //     }
+  //   }
+  // }
+
+  _register(TextEditingController _userEmailController,
+      TextEditingController _userPasswordController) async {
+    try {
+      setState(() {
+        _isloading = true;
+      });
+      final credential =
+          await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        email: _userEmailController.text,
+        password: _userPasswordController.text,
+      );
+      setState(() {
+        _isloading = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text("successful")));
+      Navigator.push(context, MaterialPageRoute(builder: (context) => const home_screen()));
+    } on FirebaseAuthException catch (e) {
+      setState(() {
+        _isloading = false;
+      });
+      if (e.code == 'weak-password') {
+        print('The password provided is too weak.');
+        ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text("The password provided is too weak.")));
+      } else if (e.code == 'email-already-in-use') {
+        print('The account already exists for that email.');
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text("The account already exists for that email.")));
       }
+    } catch (e) {
+      print(e);
+      return ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(e.toString())));
     }
   }
 
@@ -78,6 +115,7 @@ class _signup_screenState extends State<signup_screen> {
   bool _facebookHold = false;
   bool _passwordVisible = false;
   bool _isChecked = false;
+  bool _isloading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -347,20 +385,25 @@ class _signup_screenState extends State<signup_screen> {
                   Padding(
                     padding: const EdgeInsets.fromLTRB(0, 15, 0, 0),
                     child: TextButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        _register(
+                            _userEmailController, _userPasswordController);
+                      },
                       child: Container(
                         padding: const EdgeInsets.fromLTRB(100, 10, 100, 10),
                         decoration: const BoxDecoration(
                           color: Color(0xff0EBE7F),
                           borderRadius: BorderRadius.all(Radius.circular(15)),
                         ),
-                        child: const Text(
-                          "Sign Up",
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 18),
-                        ),
+                        child: _isloading
+                            ? CircularProgressIndicator()
+                            : const Text(
+                                "Sign Up",
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 18),
+                              ),
                       ),
                     ),
                   ),
