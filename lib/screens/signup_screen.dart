@@ -34,43 +34,9 @@ class _signup_screenState extends State<signup_screen> {
   }
 
   String email = "", password = "", name = "";
-  TextEditingController _userPasswordController = TextEditingController();
-  TextEditingController _userEmailController = TextEditingController();
   TextEditingController _userNameController = TextEditingController();
-
-  // registration() async {
-  //   if (password != null && _userNameController.text!="" && _userEmailController.text!="") {
-  //     // ignore: duplicate_ignore
-  //     try {
-  //       UserCredential userCredential = await FirebaseAuth.instance
-  //           .createUserWithEmailAndPassword(email: email, password: password);
-  //       // ignore: use_build_context_synchronously
-  //       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-  //           content: Text(
-  //         "Registerd Sucessfully",
-  //         style: TextStyle(fontSize: 20),
-  //       )));
-  //       Navigator.push(
-  //           context, MaterialPageRoute(builder: (context) => const home_screen()));
-  //     } on FirebaseAuthException catch (e) {
-  //       if (e.code == "weak-password") {
-  //         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-  //             backgroundColor: Colors.orangeAccent,
-  //             content: Text(
-  //               "Password provided is too weak",
-  //               style: TextStyle(fontSize: 18),
-  //             )));
-  //       } else if (e.code == "email-already-in-use"){
-  //         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-  //             backgroundColor: Colors.orangeAccent,
-  //             content: Text(
-  //               "Account already exists",
-  //               style: TextStyle(fontSize: 18),
-  //             )));
-  //       }
-  //     }
-  //   }
-  // }
+  TextEditingController _userEmailController = TextEditingController();
+  TextEditingController _userPasswordController = TextEditingController();
 
   _register(TextEditingController _userEmailController,
       TextEditingController _userPasswordController) async {
@@ -86,9 +52,10 @@ class _signup_screenState extends State<signup_screen> {
       setState(() {
         _isloading = false;
       });
-      ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text("successful")));
-      Navigator.push(context, MaterialPageRoute(builder: (context) => const home_screen()));
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text("successful")));
+      Navigator.push(context,
+          MaterialPageRoute(builder: (context) => const home_screen()));
     } on FirebaseAuthException catch (e) {
       setState(() {
         _isloading = false;
