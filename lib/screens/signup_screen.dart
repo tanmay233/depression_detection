@@ -1,6 +1,8 @@
-// ignore_for_file: use_build_context_synchronously, prefer_final_fields, annotate_overrides, camel_case_types, duplicate_ignore, unused_local_variable, unnecessary_null_comparison, unused_import, prefer_const_constructors, no_leading_underscores_for_local_identifiers, avoid_print
+// ignore_for_file: use_build_context_synchronously, prefer_final_fields, annotate_overrides, camel_case_types, duplicate_ignore, unused_local_variable, unnecessary_null_comparison, unused_import, prefer_const_constructors, no_leading_underscores_for_local_identifiers, avoid_print, unused_field, prefer_const_literals_to_create_immutables
 
 import 'package:back_button_interceptor/back_button_interceptor.dart';
+import 'package:depression_app/Firebase/authentication.dart';
+import 'package:depression_app/reusableWidgets/reusableFormField.dart';
 import 'package:depression_app/screens/home_screen.dart';
 import 'package:depression_app/screens/login_screen.dart';
 import 'package:depression_app/screens/test.dart';
@@ -33,56 +35,18 @@ class _signup_screenState extends State<signup_screen> {
     return true;
   }
 
-  String email = "", password = "", name = "";
   TextEditingController _userNameController = TextEditingController();
   TextEditingController _userEmailController = TextEditingController();
   TextEditingController _userPasswordController = TextEditingController();
-
-  _register(TextEditingController _userEmailController,
-      TextEditingController _userPasswordController) async {
-    try {
-      setState(() {
-        _isloading = true;
-      });
-      final credential =
-          await FirebaseAuth.instance.createUserWithEmailAndPassword(
-        email: _userEmailController.text,
-        password: _userPasswordController.text,
-      );
-      setState(() {
-        _isloading = false;
-      });
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text("successful")));
-      Navigator.push(context,
-          MaterialPageRoute(builder: (context) => const home_screen()));
-    } on FirebaseAuthException catch (e) {
-      setState(() {
-        _isloading = false;
-      });
-      if (e.code == 'weak-password') {
-        print('The password provided is too weak.');
-        ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text("The password provided is too weak.")));
-      } else if (e.code == 'email-already-in-use') {
-        print('The account already exists for that email.');
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Text("The account already exists for that email.")));
-      }
-    } catch (e) {
-      print(e);
-      return ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text(e.toString())));
-    }
-  }
 
   final _formkey = GlobalKey<FormState>();
 
   bool _googleHold = false;
   bool _facebookHold = false;
-  bool _passwordVisible = false;
   bool _isChecked = false;
   bool _isloading = false;
+
+  Authentication authentication = Authentication();
 
   @override
   Widget build(BuildContext context) {
@@ -100,9 +64,9 @@ class _signup_screenState extends State<signup_screen> {
 
     return Container(
         decoration: const BoxDecoration(
-          gradient: RadialGradient(
-            center: Alignment.topLeft,
-            radius: 0.75,
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
             colors: [
               Color(0xff86DEBF),
               Colors.white,
@@ -146,70 +110,11 @@ class _signup_screenState extends State<signup_screen> {
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: <Widget>[
                       // button for google
-                      GestureDetector(
-                        onTapDown: (details) {
-                          setState(() {
-                            _googleHold = true;
-                          });
-                        },
-                        onTapUp: (details) {
-                          setState(() {
-                            _googleHold = false;
-                          });
-                        },
-                        child: Card(
-                          elevation: _googleHold ? 0 : 5,
-                          child: Container(
-                            padding: const EdgeInsets.fromLTRB(30, 15, 30, 15),
-                            decoration: const BoxDecoration(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(15)),
-                                color: Colors.white),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                SvgPicture.asset('assets/images/google.svg'),
-                                const SizedBox(
-                                  width: 10,
-                                ),
-                                const Text("Google")
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
+                      reusableGestureDetector(
+                          path: 'assets/images/google.svg', name: 'Google'),
                       //Button for facebook
-                      GestureDetector(
-                        onTapDown: (details) {
-                          setState(() {
-                            _facebookHold = true;
-                          });
-                        },
-                        onTapUp: (details) {
-                          setState(() {
-                            _facebookHold = false;
-                          });
-                        },
-                        child: Card(
-                          elevation: _facebookHold ? 0 : 5,
-                          child: Container(
-                            padding: const EdgeInsets.fromLTRB(30, 15, 30, 15),
-                            decoration: const BoxDecoration(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(15)),
-                                color: Colors.white),
-                            child: Row(
-                              children: [
-                                SvgPicture.asset('assets/images/facebook.svg'),
-                                const SizedBox(
-                                  width: 10,
-                                ),
-                                const Text("FaceBook")
-                              ],
-                            ),
-                          ),
-                        ),
-                      )
+                      reusableGestureDetector(
+                          path: 'assets/images/facebook.svg', name: 'Facebook'),
                     ],
                   ),
                   // in between space
@@ -223,126 +128,21 @@ class _signup_screenState extends State<signup_screen> {
                     key: _formkey,
                     child: Column(
                       children: [
-                        Padding(
-                          padding: EdgeInsets.fromLTRB(
-                              MediaQuery.of(context).size.width * 0.05,
-                              0,
-                              MediaQuery.of(context).size.width * 0.05,
-                              0),
-                          child: Card(
-                            elevation: 2.5,
-                            child: Theme(
-                              data: Theme.of(context)
-                                  .copyWith(splashColor: Colors.transparent),
-                              child: TextFormField(
-                                validator: (value) {
-                                  if (value == null || value.isEmpty) {
-                                    return 'Please Enter Name';
-                                  }
-                                  return null;
-                                },
-                                keyboardType: TextInputType.text,
-                                controller: _userNameController,
-                                decoration: const InputDecoration(
-                                    hintText: 'Name',
-                                    filled: true,
-                                    fillColor: Colors.white,
-                                    hintStyle: TextStyle(color: Colors.grey),
-                                    focusedBorder: OutlineInputBorder(
-                                        borderSide: BorderSide(
-                                            width: 2, color: Colors.grey)),
-                                    enabledBorder: OutlineInputBorder(
-                                        borderSide: BorderSide(
-                                            width: 2, color: Colors.white))),
-                                style: const TextStyle(color: Colors.black),
-                              ),
-                            ),
-                          ),
+                        reusableFormField(
+                          controller: _userNameController,
+                          hint: 'Name',
+                          isPassword: false,
                         ),
-                        Padding(
-                          padding: EdgeInsets.fromLTRB(
-                              MediaQuery.of(context).size.width * 0.05,
-                              0,
-                              MediaQuery.of(context).size.width * 0.05,
-                              0),
-                          child: Card(
-                            elevation: 2.5,
-                            child: Theme(
-                              data: Theme.of(context)
-                                  .copyWith(splashColor: Colors.transparent),
-                              child: TextFormField(
-                                validator: (value) {
-                                  if (value == null || value.isEmpty) {
-                                    return 'Please Enter Email';
-                                  }
-                                  return null;
-                                },
-                                keyboardType: TextInputType.text,
-                                controller: _userEmailController,
-                                decoration: const InputDecoration(
-                                    hintText: 'Email',
-                                    filled: true,
-                                    fillColor: Colors.white,
-                                    hintStyle: TextStyle(color: Colors.grey),
-                                    focusedBorder: OutlineInputBorder(
-                                        borderSide: BorderSide(
-                                            width: 2, color: Colors.grey)),
-                                    enabledBorder: OutlineInputBorder(
-                                        borderSide: BorderSide(
-                                            width: 2, color: Colors.white))),
-                                style: const TextStyle(color: Colors.black),
-                              ),
-                            ),
-                          ),
+                        reusableFormField(
+                          controller: _userEmailController,
+                          hint: 'Email',
+                          isPassword: false,
                         ),
-                        Padding(
-                          padding: EdgeInsets.fromLTRB(
-                              MediaQuery.of(context).size.width * 0.05,
-                              0,
-                              MediaQuery.of(context).size.width * 0.05,
-                              0),
-                          child: Card(
-                            elevation: 2.5,
-                            child: Theme(
-                              data: Theme.of(context)
-                                  .copyWith(splashColor: Colors.transparent),
-                              child: TextFormField(
-                                validator: (value) {
-                                  if (value == null || value.isEmpty) {
-                                    return 'Please Enter Password';
-                                  }
-                                  return null;
-                                },
-                                keyboardType: TextInputType.text,
-                                controller: _userPasswordController,
-                                obscureText: !_passwordVisible,
-                                decoration: InputDecoration(
-                                    filled: true,
-                                    fillColor: Colors.white,
-                                    hintText: 'Password',
-                                    hintStyle:
-                                        const TextStyle(color: Colors.grey),
-                                    suffixIcon: IconButton(
-                                      icon: Icon(_passwordVisible
-                                          ? Icons.visibility
-                                          : Icons.visibility_off),
-                                      onPressed: () {
-                                        setState(() {
-                                          _passwordVisible = !_passwordVisible;
-                                        });
-                                      },
-                                    ),
-                                    focusedBorder: const OutlineInputBorder(
-                                        borderSide: BorderSide(
-                                            width: 2, color: Colors.grey)),
-                                    enabledBorder: const OutlineInputBorder(
-                                        borderSide: BorderSide(
-                                            width: 2, color: Colors.white))),
-                                style: const TextStyle(color: Colors.black),
-                              ),
-                            ),
-                          ),
-                        ),
+                        reusableFormField(
+                          controller: _userPasswordController,
+                          hint: 'Password',
+                          isPassword: true,
+                        )
                       ],
                     ),
                   ),
@@ -350,11 +150,23 @@ class _signup_screenState extends State<signup_screen> {
                   // Sign in button
 
                   Padding(
-                    padding: const EdgeInsets.fromLTRB(0, 15, 0, 0),
+                    padding: EdgeInsets.fromLTRB(0, 15, 0, 0),
                     child: TextButton(
-                      onPressed: () {
-                        _register(
-                            _userEmailController, _userPasswordController);
+                      onPressed: () async {
+                        if (_isChecked == true) {
+                          setState(() {
+                            _isloading = true;
+                          });
+                          await authentication.register(context,
+                              _userEmailController, _userPasswordController);
+                          setState(() {
+                            _isloading = false;
+                          });
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                              content: Text(
+                                  "Please accept the Terms and Conditions")));
+                        }
                       },
                       child: Container(
                         padding: const EdgeInsets.fromLTRB(100, 10, 100, 10),
