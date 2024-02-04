@@ -22,8 +22,8 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const MaterialApp(
-      home: soundLelo(),
-      // home: signup_screen()
-    );
+        debugShowCheckedModeBanner: false,
+        // home: soundLelo(),
+        home: loginScreen());
   }
 }

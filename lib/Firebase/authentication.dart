@@ -6,13 +6,13 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class Authentication {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
   dynamic register(
       BuildContext context,
       TextEditingController userEmailController,
       TextEditingController userPasswordController) async {
     try {
-      final credential =
-          await FirebaseAuth.instance.createUserWithEmailAndPassword(
+      UserCredential credential = await _auth.createUserWithEmailAndPassword(
         email: userEmailController.text,
         password: userPasswordController.text,
       );
@@ -40,9 +40,10 @@ class Authentication {
   dynamic login(BuildContext context, TextEditingController userEmailController,
       TextEditingController userPasswordController) async {
     try {
-      final credential = await FirebaseAuth.instance.signInWithEmailAndPassword(
-          email: userEmailController.text,
-          password: userPasswordController.text);
+      UserCredential credential = await FirebaseAuth.instance
+          .signInWithEmailAndPassword(
+              email: userEmailController.text,
+              password: userPasswordController.text);
       print('logged in');
       Navigator.push(
           context, MaterialPageRoute(builder: (context) => home_screen()));
@@ -60,6 +61,18 @@ class Authentication {
         ScaffoldMessenger.of(context)
             .showSnackBar(SnackBar(content: Text(e.toString())));
       }
+    }
+  }
+
+  Future signOut(BuildContext context) async {
+    try {
+      return await _auth.signOut().then((value) => Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const loginScreen()),
+          ));
+    } catch (e) {
+      print(e.toString());
+      return null;
     }
   }
 }

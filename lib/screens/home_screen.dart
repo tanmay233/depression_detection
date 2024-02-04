@@ -1,5 +1,6 @@
 // ignore_for_file: camel_case_types, prefer_const_constructors
 
+import 'package:depression_app/Firebase/authentication.dart';
 import 'package:flutter/material.dart';
 
 class home_screen extends StatefulWidget {
@@ -10,10 +11,24 @@ class home_screen extends StatefulWidget {
 }
 
 class _home_screenState extends State<home_screen> {
+  Authentication authentication = Authentication();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Text("data"),
+      body: Center(
+        child: GestureDetector(
+          onTap: () {
+            authentication.signOut(context);
+          },
+          child: Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(15),
+              color: Colors.red,
+            ),
+            child: Text("Sign out"),
+          ),
+        ),
+      ),
     );
   }
 }
