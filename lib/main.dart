@@ -1,10 +1,18 @@
-import 'package:depression_app/screens/login_screen.dart';
-import 'package:flutter/material.dart';
-import 'package:depression_app/views/splash_screen.dart';
-import 'package:google_fonts/google_fonts.dart';
-import './views/pages.dart';
+// ignore_for_file: unused_import
 
-void main() {
+import 'package:depression_app/screens/login_screen.dart';
+import 'package:depression_app/screens/signup_screen.dart';
+import 'package:depression_app/screens/soundLeLo.dart';
+import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+
   runApp(const MyApp());
 }
 
@@ -13,21 +21,9 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-        title: 'Depression Detection App',
-        theme: ThemeData(
-          textTheme: GoogleFonts.manropeTextTheme(
-            Theme.of(context).textTheme,
-          ),
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-          useMaterial3: true,
-        ),
+    return const MaterialApp(
         debugShowCheckedModeBanner: false,
-        home: const SplashScreen());
-
-    // return const MaterialApp(
-
-    //   home: loginScreen(),
-    // );
+        // home: soundLelo(),
+        home: loginScreen());
   }
 }
