@@ -48,14 +48,37 @@ class _OnboardingPageState extends State<OnboardingPage> {
                               child: Container(
                                 width: 336,
                                 height: 336,
-                                child: Image.asset(
-                                    onboardingContents[index].image),
+                                decoration: ShapeDecoration(
+                                  image: DecorationImage(
+                                    image: AssetImage(
+                                        onboardingContents[index].image),
+                                    fit: BoxFit.cover,
+                                  ),
+                                  shape: OvalBorder(),
+                                ),
                               ),
                             ),
-                            Text(
-                              onboardingContents[index].title,
-                              style: kTitle,
-                              textAlign: TextAlign.center,
+                            Positioned(
+                              left: 48,
+                              top: 478,
+                              child: Text(
+                                onboardingContents[index].title,
+                                style: kTitle,
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                            Positioned(
+                              left: 51,
+                              top: 523,
+                              child: SizedBox(
+                                width: 274,
+                                height: 70,
+                                child: Text(
+                                  'Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of it over 2000 years old.',
+                                  textAlign: TextAlign.center,
+                                  style: kBodyText1,
+                                ),
+                              ),
                             ),
                           ],
                         )))

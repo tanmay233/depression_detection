@@ -1,3 +1,4 @@
+import 'package:depression_app/screens/login_screen.dart';
 import 'package:depression_app/views/onboarding_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -17,7 +18,7 @@ class _SplashScreenState extends State<SplashScreen>
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
     Future.delayed(const Duration(seconds: 3), () {
       Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (_) => const OnboardingPage()));
+          MaterialPageRoute(builder: (_) => const loginScreen()));
     });
   }
 
