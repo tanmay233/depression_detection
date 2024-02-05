@@ -66,7 +66,7 @@ class Authentication {
 
   Future signOut(BuildContext context) async {
     try {
-      return await _auth.signOut().then((value) => Navigator.push(
+      return await _auth.signOut().then((value) => Navigator.pop(
             context,
             MaterialPageRoute(builder: (context) => const loginScreen()),
           ));
