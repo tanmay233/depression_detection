@@ -1,3 +1,5 @@
+// ignore_for_file: unused_import
+
 import 'package:depression_app/screens/login_screen.dart';
 import 'package:depression_app/views/onboarding_page.dart';
 import 'package:flutter/material.dart';

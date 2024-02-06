@@ -1,5 +1,6 @@
-// ignore_for_file: file_names, camel_case_types
+// ignore_for_file: file_names, camel_case_types, use_build_context_synchronously
 
+import 'package:depression_app/Firebase/authentication.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 
@@ -81,6 +82,7 @@ class reusableGestureDetector extends StatefulWidget {
 }
 
 class _reusableGestureDetectorState extends State<reusableGestureDetector> {
+  final Authentication authentication = Authentication();
   bool hold = false;
   @override
   Widget build(BuildContext context) {
@@ -94,6 +96,11 @@ class _reusableGestureDetectorState extends State<reusableGestureDetector> {
         setState(() {
           hold = false;
         });
+      },
+      onTap: () {
+        if (widget.name == 'Google') {
+          authentication.signInWithGoogle(context);
+        }
       },
       child: Card(
         elevation: hold ? 0 : 5,

@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors
+
 import 'package:depression_app/app_styles.dart';
 import 'package:depression_app/model/onboard_data.dart';
 import 'package:depression_app/size_configs.dart';
