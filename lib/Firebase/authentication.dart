@@ -2,6 +2,7 @@
 
 import 'package:depression_app/screens/home_screen.dart';
 import 'package:depression_app/screens/login_screen.dart';
+import 'package:depression_app/screens/soundLeLo.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -46,7 +47,7 @@ class Authentication {
               password: userPasswordController.text);
       print('logged in');
       Navigator.push(
-          context, MaterialPageRoute(builder: (context) => home_screen()));
+          context, MaterialPageRoute(builder: (context) => soundLelo()));
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
         print('No user found for that email.');
@@ -66,7 +67,7 @@ class Authentication {
 
   Future signOut(BuildContext context) async {
     try {
-      return await _auth.signOut().then((value) => Navigator.push(
+      return await _auth.signOut().then((value) => Navigator.pop(
             context,
             MaterialPageRoute(builder: (context) => const loginScreen()),
           ));
