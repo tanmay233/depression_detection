@@ -1,10 +1,14 @@
 // ignore_for_file: unused_local_variable, prefer_const_constructors, use_build_context_synchronously, avoid_print
 
+// import 'dart:js_interop';
+
 import 'package:depression_app/screens/home_screen.dart';
 import 'package:depression_app/screens/login_screen.dart';
 import 'package:depression_app/screens/soundLeLo.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 class Authentication {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -62,6 +66,33 @@ class Authentication {
         ScaffoldMessenger.of(context)
             .showSnackBar(SnackBar(content: Text(e.toString())));
       }
+    }
+  }
+
+  Future<void> signInWithGoogle(BuildContext context) async {
+    final FirebaseAuth auth = FirebaseAuth.instance;
+    final GoogleSignIn googleSignIn = GoogleSignIn();
+
+    try {
+      final GoogleSignInAccount? googleSignInAccount =
+          await googleSignIn.signIn();
+      if (googleSignInAccount != null) {
+        final GoogleSignInAuthentication googleSignInAuthentication =
+            await googleSignInAccount.authentication;
+
+        final AuthCredential credential = GoogleAuthProvider.credential(
+            idToken: googleSignInAuthentication.idToken,
+            accessToken: googleSignInAuthentication.accessToken);
+
+        await auth.signInWithCredential(credential);
+
+        Navigator.pushReplacement(
+            context, MaterialPageRoute(builder: (_) => home_screen()));
+      }
+    } catch (e) {
+      Fluttertoast.showToast(msg: "Error $e");
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(e.toString())));
     }
   }
 
